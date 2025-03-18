@@ -11,8 +11,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Service for parsing CSV and Excel files related to employees and Secret Santa assignments.
+ * Extends {@link BaseLogger} to enable logging across the service.
+ */
 @Service
 public class CSVService extends BaseLogger {
+    /**
+     * Parses an employee CSV or Excel file and returns a list of {@link Employee} objects.
+     *
+     * @param file The {@link MultipartFile} containing employee data in CSV or Excel format.
+     * @return A list of {@link Employee} objects extracted from the file.
+     * @throws FileProcessingException if there is an issue parsing the file.
+     */
     public List<Employee> parseEmployeeCsv(MultipartFile file) {
         try {
             logger.debug("Parsing Employee CSV file: {}", file.getOriginalFilename());
@@ -25,6 +36,13 @@ public class CSVService extends BaseLogger {
         }
     }
 
+    /**
+     * Parses a previous Secret Santa assignment CSV or Excel file and returns a list of {@link SecretSantaAssignment} objects.
+     *
+     * @param file The {@link MultipartFile} containing previous Secret Santa assignments in CSV or Excel format.
+     * @return A list of {@link SecretSantaAssignment} objects extracted from the file.
+     * @throws FileProcessingException if there is an issue parsing the file.
+     */
     public List<SecretSantaAssignment> parsePrevAssignmentCSV(MultipartFile file) {
         try {
             logger.debug("Parsing Previous Secret Santa Assignment CSV file: {}", file.getOriginalFilename());

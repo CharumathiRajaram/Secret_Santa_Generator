@@ -1,10 +1,26 @@
 package com.acme.secret.santa.exception;
 
-public class FileProcessingException extends RuntimeException{
-    public FileProcessingException(String message){
+/**
+ * Exception thrown when there is an error during file processing.
+ */
+public class FileProcessingException extends RuntimeException {
+
+    /**
+     * Constructs a new {@code FileProcessingException} with the specified detail message.
+     *
+     * @param message the detail message explaining the reason for the exception.
+     */
+    public FileProcessingException(String message) {
         super(message);
     }
-    public FileProcessingException(String message,Throwable cause){
-        super(message,cause);
+
+    /**
+     * Constructs a new {@code FileProcessingException} with the specified detail message and cause.
+     *
+     * @param message the detail message explaining the reason for the exception.
+     * @param cause   the cause of the exception (can be another exception).
+     */
+    public FileProcessingException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

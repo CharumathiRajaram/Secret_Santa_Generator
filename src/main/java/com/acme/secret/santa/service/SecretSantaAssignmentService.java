@@ -9,8 +9,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Service for assigning Secret Santa pairs.
+ */
 @Service
 public class SecretSantaAssignmentService extends BaseLogger {
+    /**
+     * Assigns Secret Santa pairs to employees while ensuring constraints are met.
+     *
+     * @param employees      The list of employees participating in the Secret Santa event.
+     * @param prevAssignment The list of previous year's Secret Santa assignments (can be empty).
+     * @return A list of {@link SecretSantaAssignment} containing the assigned pairs.
+     * @throws AssignmentException if constraints prevent successful assignment.
+     */
     public List<SecretSantaAssignment> assignSecretSanta(List<Employee> employees, List<SecretSantaAssignment> prevAssignment) {
         logger.info("Starting Secret Santa assignment process...");
         if (employees == null || employees.isEmpty()) {

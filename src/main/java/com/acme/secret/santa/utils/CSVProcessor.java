@@ -19,6 +19,15 @@ import java.util.List;
 public class CSVProcessor {
     private static final Logger logger = LoggerFactory.getLogger(CSVProcessor.class);
 
+    /**
+     * Parses the provided CSV or Excel file and converts it into a list of objects of the specified type.
+     *
+     * @param file the uploaded file (CSV or Excel)
+     * @param type the class type (Employee or SecretSantaAssignment)
+     * @param <T>  the generic type parameter
+     * @return a list of parsed objects of the given type
+     * @throws IOException if an error occurs while reading the file
+     */
     public static <T> List<T> parseFile(MultipartFile file, Class<T> type) throws IOException {
         String fileName = file.getOriginalFilename();
         try {
@@ -41,6 +50,15 @@ public class CSVProcessor {
         }
     }
 
+    /**
+     * Parses a CSV file and converts it into a list of objects of the specified type.
+     *
+     * @param file the uploaded CSV file
+     * @param type the class type (Employee or SecretSantaAssignment)
+     * @param <T>  the generic type parameter
+     * @return a list of parsed objects of the given type
+     * @throws IOException if an error occurs while reading the file
+     */
     private static <T> List<T> parseCSV(MultipartFile file, Class<T> type) throws IOException {
         List<T> data = new ArrayList<>();
         logger.debug("Parsing CSV file...");
@@ -80,6 +98,15 @@ public class CSVProcessor {
         return data;
     }
 
+    /**
+     * Parses an Excel file and converts it into a list of objects of the specified type.
+     *
+     * @param file the uploaded Excel file
+     * @param type the class type (Employee or SecretSantaAssignment)
+     * @param <T>  the generic type parameter
+     * @return a list of parsed objects of the given type
+     * @throws IOException if an error occurs while reading the file
+     */
     private static <T> List<T> parseExcel(MultipartFile file, Class<T> type) throws IOException {
         List<T> data = new ArrayList<>();
         logger.debug("Parsing Excel file...");
