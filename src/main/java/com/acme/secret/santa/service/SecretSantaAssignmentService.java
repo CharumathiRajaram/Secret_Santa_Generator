@@ -4,22 +4,27 @@ package com.acme.secret.santa.service;
 import com.acme.secret.santa.exception.AssignmentException;
 import com.acme.secret.santa.model.Employee;
 import com.acme.secret.santa.model.SecretSantaAssignment;
+import com.acme.secret.santa.utils.BaseLogger;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-public class SecretSantaAssignmentService {
+public class SecretSantaAssignmentService extends BaseLogger {
     public List<SecretSantaAssignment> assignSecretSanta(List<Employee> employees, List<SecretSantaAssignment> prevAssignment) {
+        logger.info("Starting Secret Santa assignment process...");
         if (employees == null || employees.isEmpty()) {
+            logger.warn("Employee list is empty. Cannot assign Secret Santa.");
             throw new AssignmentException("Employee list is empty. Cannot assign Secret Santa.");
         }
         if (employees.size() == 1) {
+            logger.warn("Only one employee provided. At least two employees are required.");
             throw new AssignmentException("At least two employees are required for Secret Santa.");
         }
         List<Employee> shuffled = new ArrayList<>(employees);
         //shuffle employees
         Collections.shuffle(shuffled);
+        logger.debug("Shuffled employee list: {}", shuffled);
         Map<String, Employee> assignment = new HashMap<>();
         for (Employee santa : employees) {
             List<Employee> eligibleChildren = new ArrayList<>();
@@ -31,6 +36,7 @@ public class SecretSantaAssignmentService {
                 }
             }
             if (eligibleChildren.isEmpty()) {
+                logger.error("Failed to assign Secret Santa for {} due to constraints.", santa.employeeEmail());
                 throw new AssignmentException("Failed to assign Secret Santa due to constraints. Please check input.");
             }
             Employee assignChild = eligibleChildren.get(new Random().nextInt(eligibleChildren.size()));
@@ -43,6 +49,7 @@ public class SecretSantaAssignmentService {
             Employee assignChild = assignment.get(santa.employeeEmail());
             secretSantaAssignments.add(new SecretSantaAssignment(santa.employeeName(), santa.employeeEmail(), assignChild.employeeName(), assignChild.employeeEmail()));
         }
+        logger.debug("Successfully assigned Secret Santa to {} employees.", secretSantaAssignments.size());
         return secretSantaAssignments;
     }
 }
