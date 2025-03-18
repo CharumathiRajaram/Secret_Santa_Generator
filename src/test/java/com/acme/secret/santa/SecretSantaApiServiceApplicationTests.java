@@ -1,4 +1,4 @@
-package com.secretsanta.secret_santa_api_service;
+package com.acme.secret.santa;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
