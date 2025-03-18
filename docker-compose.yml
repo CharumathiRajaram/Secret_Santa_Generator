@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  secret-santa:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - secret-santa-network
+
+networks:
+  secret-santa-network:
+    driver: bridge
