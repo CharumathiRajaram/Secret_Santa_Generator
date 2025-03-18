@@ -1,5 +1,6 @@
 package com.acme.secret.santa.service;
 
+import com.acme.secret.santa.exception.FileProcessingException;
 import com.acme.secret.santa.model.Employee;
 import com.acme.secret.santa.model.SecretSantaAssignment;
 import com.acme.secret.santa.utils.CSVProcessor;
@@ -11,11 +12,19 @@ import java.util.List;
 
 @Service
 public class CSVService {
-    public List<Employee> parseEmployeeCsv(MultipartFile file) throws IOException{
-        return CSVProcessor.parseFile(file,Employee.class);
+    public List<Employee> parseEmployeeCsv(MultipartFile file) {
+        try {
+            return CSVProcessor.parseFile(file, Employee.class);
+        } catch (IOException e) {
+            throw new FileProcessingException("Failed to parse Employee CSV file.", e);
+        }
     }
 
-    public List<SecretSantaAssignment> parsePrevAssignmentCSV(MultipartFile file)  throws IOException{
-        return CSVProcessor.parseFile(file,SecretSantaAssignment.class);
+    public List<SecretSantaAssignment> parsePrevAssignmentCSV(MultipartFile file) {
+        try {
+            return CSVProcessor.parseFile(file, SecretSantaAssignment.class);
+        } catch (IOException e) {
+            throw new FileProcessingException("Failed to parse parse Previous Assignment CSV file.", e);
+        }
     }
 }

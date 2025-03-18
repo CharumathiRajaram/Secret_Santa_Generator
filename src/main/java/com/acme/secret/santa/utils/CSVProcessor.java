@@ -1,5 +1,7 @@
 package com.acme.secret.santa.utils;
 
+import com.acme.secret.santa.exception.FileProcessingException;
+import com.acme.secret.santa.exception.InvalidFileFormatException;
 import com.acme.secret.santa.model.Employee;
 import com.acme.secret.santa.model.SecretSantaAssignment;
 import org.apache.poi.ss.usermodel.Row;
@@ -8,24 +10,25 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CSVProcessor {
 
     public static <T> List<T> parseFile(MultipartFile file, Class<T> type) throws IOException {
-        String fileName = file.getOriginalFilename();
-        if (fileName.isBlank()) throw new IllegalArgumentException("File is empty");
-        if (fileName.endsWith(".csv")) {
-            return parseCSV(file, type);
-        } else if (fileName.endsWith(".xlsx")) {
-            return parseExcel(file, type);
-        } else {
-            throw new IllegalArgumentException("Unsupported File Format.Please Upload CSV or Excel file");
+        try {
+            String fileName = file.getOriginalFilename();
+            if (file.isEmpty() || fileName.isBlank()) throw new FileProcessingException("File is empty or null");
+            if (fileName.endsWith(".csv")) {
+                return parseCSV(file, type);
+            } else if (fileName.endsWith(".xlsx")) {
+                return parseExcel(file, type);
+            } else {
+                throw new FileProcessingException("Unsupported File Format.Please Upload CSV or Excel file");
+            }
+        } catch (IOException e) {
+            throw new FileProcessingException("Error reading file", e);
         }
     }
 
@@ -41,13 +44,23 @@ public class CSVProcessor {
                 }
                 if (!line.trim().isEmpty()) {
                     String[] fields = line.split(",");
-                    if (type == Employee.class) {
-                        data.add(type.cast(new Employee(fields[0], fields[1])));
-                    } else if (type == SecretSantaAssignment.class) {
-                        data.add(type.cast(new SecretSantaAssignment(fields[0], fields[1], fields[2], fields[3])));
+                    if ((type == Employee.class && fields.length < 2) ||
+                            (type == SecretSantaAssignment.class && fields.length < 4)) {
+                        throw new FileProcessingException("Invalid CSV format. Missing fields.");
+                    }
+                    try {
+                        if (type == Employee.class) {
+                            data.add(type.cast(new Employee(fields[0], fields[1])));
+                        } else if (type == SecretSantaAssignment.class) {
+                            data.add(type.cast(new SecretSantaAssignment(fields[0], fields[1], fields[2], fields[3])));
+                        }
+                    } catch (Exception e) {
+                        throw new FileProcessingException("Error parsing CSV row:" + line, e);
                     }
                 }
             }
+        } catch (IOException e) {
+            throw new FileProcessingException("Error reading CSV file", e);
         }
         return data;
     }
@@ -60,17 +73,23 @@ public class CSVProcessor {
             Sheet sheet = workBook.getSheetAt(0);
             for (Row row : sheet) {
                 if (row.getRowNum() == 0) continue;
-                if (type == Employee.class) {
-                    data.add(type.cast(new Employee(row.getCell(0).getStringCellValue(), row.getCell(1).getStringCellValue())));
-                } else if (type == SecretSantaAssignment.class) {
-                    data.add(type.cast(new SecretSantaAssignment(row.getCell(0).getStringCellValue(),
-                            row.getCell(1).getStringCellValue(),
-                            row.getCell(2).getStringCellValue(),
-                            row.getCell(3).getStringCellValue())));
+                try {
+                    if (type == Employee.class) {
+                        data.add(type.cast(new Employee(row.getCell(0).getStringCellValue(), row.getCell(1).getStringCellValue())));
+                    } else if (type == SecretSantaAssignment.class) {
+                        data.add(type.cast(new SecretSantaAssignment(row.getCell(0).getStringCellValue(),
+                                row.getCell(1).getStringCellValue(),
+                                row.getCell(2).getStringCellValue(),
+                                row.getCell(3).getStringCellValue())));
+                    }
+                } catch (Exception e) {
+                    throw new FileProcessingException("Error processing Excel row: ", e);
                 }
             }
-            return data;
+        } catch (IOException | InvalidFileFormatException e) {
+            throw new FileProcessingException("Error reading Excel file", e);
         }
+        return data;
     }
 
 }
