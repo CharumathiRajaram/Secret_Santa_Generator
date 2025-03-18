@@ -12,10 +12,10 @@ import java.util.List;
 @Service
 public class CSVService {
     public List<Employee> parseEmployeeCsv(MultipartFile file) throws IOException{
-        return CSVProcessor.parseEmployeeCsv(file);
+        return CSVProcessor.parseFile(file,Employee.class);
     }
 
     public List<SecretSantaAssignment> parsePrevAssignmentCSV(MultipartFile file)  throws IOException{
-        return CSVProcessor.parsePrevAssignmentCSV(file);
+        return CSVProcessor.parseFile(file,SecretSantaAssignment.class);
     }
 }
